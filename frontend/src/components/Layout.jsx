@@ -119,7 +119,7 @@ const getRoleBadge = (role) => {
 };
 
 export default function Layout({ children }) {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, demoMode } = useAuth();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -132,6 +132,13 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Demo Mode Banner */}
+      {demoMode && (
+        <div className="bg-yellow-500 text-yellow-900 px-4 py-2 text-center text-sm font-medium">
+          🎮 Demo Mode Active - Data is simulated. Backend API unavailable.
+        </div>
+      )}
+      
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
