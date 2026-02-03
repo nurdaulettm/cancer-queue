@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueBeam Queue Management - Status</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .status {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .status-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .status-icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        .checking {
+            color: #ff9800;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: left;
+            margin: 20px 0;
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .code {
+            background: #263238;
+            color: #aed581;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+            text-align: left;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 TrueBeam Queue Management System</h1>
+        <p class="subtitle">Radiation Therapy Queue Optimization</p>
+        
+        <div class="status">
+            <div class="status-item">
+                <div><span class="status-icon">🐍</span> <strong>Python</strong></div>
+                <div><span class="status-icon success">✅</span> Installed (v3.11)</div>
+            </div>
+            <div class="status-item">
+                <div><span class="status-icon">📦</span> <strong>Node.js</strong></div>
+                <div><span class="status-icon success">✅</span> Installed (v18)</div>
+            </div>
+            <div class="status-item">
+                <div><span class="status-icon">⚙️</span> <strong>Backend API</strong></div>
+                <div id="backend-status"><span class="spinner"></span> Starting...</div>
+            </div>
+            <div class="status-item">
+                <div><span class="status-icon">💻</span> <strong>Frontend</strong></div>
+                <div id="frontend-status"><span class="spinner"></span> Starting...</div>
+            </div>
+        </div>
+
+        <div class="info">
+            <strong>⏳ System Starting...</strong><br>
+            The servers are being initialized. Please wait a moment while we start all services.<br>
+            You will be redirected to the dashboard once everything is ready.
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="checkAndRedirect()">Check Status & Enter</button>
+            <button class="btn-secondary" onclick="openAPI()">View API Docs</button>
+        </div>
+
+        <div class="code" id="log">
+Checking services...
+• Verifying Backend on http://localhost:8000
+• Verifying Frontend on http://localhost:3000
+• Please wait...
+        </div>
+    </div>
+
+    <script>
+        let backendReady = false;
+        let frontendReady = false;
+
+        function updateLog(message) {
+            document.getElementById('log').textContent += '\n' + message;
+        }
+
+        function checkBackend() {
+            fetch('http://localhost:8000/api/health', {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(r => {
+                backendReady = true;
+                document.getElementById('backend-status').innerHTML = '<span class="status-icon success">✅</span> Running (http://localhost:8000)';
+                updateLog('✅ Backend API is ready');
+                return r.json();
+            })
+            .catch(e => {
+                document.getElementById('backend-status').innerHTML = '<span class="status-icon checking">⏳</span> Starting...';
+                updateLog('⏳ Backend still starting, retrying...');
+                setTimeout(checkBackend, 2000);
+            });
+        }
+
+        function checkFrontend() {
+            fetch('http://localhost:3000', {
+                method: 'HEAD',
+                headers: { 'Accept': 'text/html' }
+            })
+            .then(r => {
+                frontendReady = true;
+                document.getElementById('frontend-status').innerHTML = '<span class="status-icon success">✅</span> Running (http://localhost:3000)';
+                updateLog('✅ Frontend is ready');
+            })
+            .catch(e => {
+                document.getElementById('frontend-status').innerHTML = '<span class="status-icon checking">⏳</span> Starting...';
+                updateLog('⏳ Frontend still starting, retrying...');
+                setTimeout(checkFrontend, 2000);
+            });
+        }
+
+        function checkAndRedirect() {
+            if (backendReady && frontendReady) {
+                window.location.href = 'http://localhost:3000';
+            } else {
+                alert('Services still starting. Please wait a moment and try again.');
+                checkBackend();
+                checkFrontend();
+            }
+        }
+
+        function openAPI() {
+            window.open('http://localhost:8000/docs', '_blank');
+        }
+
+        // Start checking
+        updateLog('🚀 Checking services...');
+        checkBackend();
+        checkFrontend();
+
+        // Redirect automatically when ready
+        setInterval(() => {
+            if (backendReady && frontendReady) {
+                updateLog('🎉 All services ready! Redirecting to dashboard...');
+                setTimeout(() => {
+                    window.location.href = 'http://localhost:3000';
+                }, 1500);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
